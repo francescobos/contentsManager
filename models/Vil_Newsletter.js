@@ -10,7 +10,11 @@ const Vil_News_Contatti = sequelize.define('VilNewsContatti', {
   },
   email: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true,
+    unique: true,
+    validate: {
+      isEmail: true
+    }
   },
   nomeCognome: {
     type: DataTypes.STRING,
@@ -105,7 +109,22 @@ const optionsView_Vil_News_Contatti = {
         props: {
         rows: 3  
         }
-    },
+      },
+      email: {
+        type: 'email',
+        isVisible: { list: true, filter: true, show: true, edit: true },
+        isRequired: true,
+        props: {
+          placeholder: 'Inserisci un indirizzo email valido',
+        },
+        validation: {
+          length: {
+            minimum: 5,
+            maximum: 255,
+          },
+          regex: '/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$/',
+        }
+      }
       // Altre configurazioni dei campi...
       }
   }

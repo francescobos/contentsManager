@@ -2,7 +2,7 @@
 import sqlite from 'better-sqlite3';
 const db = sqlite('../data/datiDB.db');
 
-const allContatti = db.prepare("SELECT email from contattiVillaggio").all();
+const allContatti = db.prepare("SELECT * from contattiVillaggio").all();
 
 //console.log(allContatti);
 
@@ -33,7 +33,7 @@ const insertVilNewsContatti = async (email, nomeCognome, testSingolo, testInvio,
         campagnaCorrente
       });
   
-      console.log('Nuovo contatto inserito:', newContatto);
+      //console.log('Nuovo contatto inserito:', newContatto);
       return newContatto;
     } catch (error) {
       console.error('Errore durante l\'inserimento del contatto:', error);
@@ -41,7 +41,7 @@ const insertVilNewsContatti = async (email, nomeCognome, testSingolo, testInvio,
     }
   }
   
- const runInsert = async () => {
+ const runInsertGenerata = async () => {
     try {
       const contatto = await insertVilNewsContatti(
         'example@example.com',
@@ -68,14 +68,35 @@ const insertVilNewsContatti = async (email, nomeCognome, testSingolo, testInvio,
     }
   }
 
+// const runInsert = async () => {
+//   allContatti.forEach(element => {
+//       insertVilNewsContatti(element.email, element.nomeCognome, element.testSingolo, element.testInvio, element.telefono, element.tags, element.data, element.unico, element.newsletter, element.ELIMINARE, element.QUOTA, element.prenotatiAnnoInCorso, element.tagsMrPreno, element.consensoNews, element.consensoProfilazione, element.canaleAcquisizione, element.campagnaCorrente);
+//   });
+// }
+
+const runInsert = async () => {
+
+  let promises = allContatti.map(element => {
+    return insertVilNewsContatti(element.email, element.nomeCognome, element.testSingolo, element.testInvio, element.telefono, element.tags, element.data, element.unico, element.newsletter, element.ELIMINARE, element.QUOTA, element.prenotatiAnnoInCorso, element.tagsMrPreno, element.consensoNews, element.consensoProfilazione, element.canaleAcquisizione, element.campagnaCorrente);
+  });
+
+  await Promise.all(promises);
+}
+
 const allinea = async () => {
     try {
         await dbSync();
-        runInsert();
+
+        let startTime = performance.now();
+        await runInsert();
+        let endTime = performance.now();
+        console.log(`Tempo di esecuzione di runInsert: ${endTime - startTime} millisecondi`);
+        
         //logOut('Avvio modulo fBoschetti...');
         //await FBoschettiSM();
         //runAdminJS();
         //avvioWatcher(pathToWatch+'/**/*.(stl|STL)');
+
     } catch (error) {
         console.log(error);
         //logError(error);
